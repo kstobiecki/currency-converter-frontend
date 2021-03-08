@@ -1,12 +1,14 @@
+import { FunctionComponent } from 'react';
 import React from 'react';
-import './App.scss';
+import Layout from '../Layout/Layout';
+import Converter from '../Converter/Converter'
 
-function App() {
+const App: FunctionComponent<{}> = () => {
   return (
-    <div className="App">
-      
-    </div>
+    <Layout>
+      <Converter/>
+    </Layout>
   );
-}
+};
 
 export default App;
