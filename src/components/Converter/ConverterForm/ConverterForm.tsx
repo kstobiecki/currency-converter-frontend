@@ -1,14 +1,26 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useState, createContext, useContext } from 'react';
 import styles from './ConverterForm.module.scss'
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import * as ApiRequests from '../../../api/ApiRequests'
 
-const onSubmit = (data: any) => {
-    // console.log(data);
-}
+type ContextState = 
+  { status: 'LOADING' } 
+| { status: 'ERROR'; message: string }
+| { status: 'LOADED'; value: { count: number } };
+
+const Context = createContext<ContextState | null>(null);
+
+export const useItemData = (): ContextState => {
+  const contextState = useContext(Context);
+  if (contextState === null) {
+    throw new Error('useItemData must be used within a ConverterForm tag');
+  }
+  return contextState;
+};
 
 const schema = z.object({
     amountInput: z.number(),
@@ -20,11 +32,27 @@ const schema = z.object({
       path: ['toValue']
   })
 
-const ConverterForm: FunctionComponent<{}>  = () => {
+const ConverterForm: FunctionComponent<{}> = (props) => {
     const { register, handleSubmit, watch, errors } = useForm({
         resolver: zodResolver(schema),
     });
+    const [state, setState] = useState<ContextState>({ 
+        status: 'LOADING' 
+    });
+    const onSubmit = async (data: any) => {
+        try {
+            const response = await ApiRequests.convertCurrency();
+            setState({
+                status: 'LOADED',
+                value: response
+              });
+        } catch (error) {
+            setState({ status: 'ERROR', message: error });
+        }
+    }
+
     return (
+        <Context.Provider value={state}>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className={styles.inputContainer}>
                     <label>Amount</label>
@@ -50,6 +78,8 @@ const ConverterForm: FunctionComponent<{}>  = () => {
                 </div>
                 <button className={styles.submitBtn}><FontAwesomeIcon icon={faChevronRight} /></button>
             </form>
+            {props.children}
+        </Context.Provider>
     );
 }
 
