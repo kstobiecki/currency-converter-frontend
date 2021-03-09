@@ -55,7 +55,7 @@ const ConverterForm: FunctionComponent<{ children: React.ReactNode }> = (props: 
             const fixedAmount = amount.toFixed(2);
             setAmount(fixedAmount);
             
-            const response: { data: ConvertCurrencyInterface } = await ApiRequests.convertCurrency({ from, to, amount: fixedAmount });
+            const response: { data: ConvertCurrencyInterface } = await ApiRequests.convertCurrency({ from, to, amount: Number.parseFloat(fixedAmount) });
 
             setState({
                 status: 'LOADED',
