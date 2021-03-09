@@ -15,8 +15,8 @@ const ConversionDisplay: FunctionComponent<{}>  = () => {
           <div className={styles.container}>
             <h1>Conversion:</h1>
             <p>{amount} {from} =</p>
-            <p>{converted} {to}</p>
-            <p>1 {from} = {conversion} {to}</p>
+            <p>{converted.toFixed(2)} {to}</p>
+            <p>1 {from} = {conversion.toFixed(5)} {to}</p>
           </div>
 
       }
