@@ -1,5 +1,6 @@
 .container {
     width: 90%;
+    height: 635px;
     margin: 20px auto;
 }
 
@@ -40,7 +41,7 @@ form {
     }
 
     .inputContainer {
-        width: 27%;
+        width: 30%;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -48,7 +49,7 @@ form {
     }
 
     .selectContainer {
-        width: 27%;
+        width: 30%;
         display: flex;
         flex-direction: column;
         align-items: flex-start;

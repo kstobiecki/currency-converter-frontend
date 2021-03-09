@@ -1,18 +1,19 @@
 import { FunctionComponent } from 'react';
 import { useConversionData } from '../ConverterForm/ConverterForm'
 import styles from './ConversionDisplay.module.scss'
-import { ConversionContextState } from '../../../shared/types';
+import { ConversionContextStateInterface } from '../../../shared/interfaces';
 
 const ConversionDisplay: FunctionComponent<{}>  = () => {
-    const conversionData: ConversionContextState = useConversionData();
+    const conversionData: ConversionContextStateInterface = useConversionData();
     if (conversionData.status === 'ERROR') {
-      return <div className={styles.container}>{conversionData.message}</div>;
+      return <div className={styles.container}>Unable to load conversion data</div>;
     }
     const { amount, converted, from, to, conversion } = conversionData.value;
     return (
       <>
       { conversion &&
           <div className={styles.container}>
+            <h1>Conversion:</h1>
             <p>{amount} {from} =</p>
             <p>{converted} {to}</p>
             <p>1 {from} = {conversion} {to}</p>

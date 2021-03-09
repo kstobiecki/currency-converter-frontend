@@ -6,14 +6,17 @@ import * as z from 'zod';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import * as ApiRequests from '../../../api/ApiRequests';
-import { ConvertCurrencyInterface } from '../../../shared/interfaces';
+import { ConvertCurrencyInterface, ConversionContextStateInterface } from '../../../shared/interfaces';
 import { CurrenciesEnum } from '../../../shared/enums'
 import { ZodRawShape } from 'zod/lib/src/types/base';
-import { ConversionContextState } from '../../../shared/types';
 
-const Context = createContext<ConversionContextState | null>(null);
+enum LimitsEnum {
+    MAX_HISTORY_ELEMENTS = 10
+}
 
-export const useConversionData = (): ConversionContextState => {
+const Context = createContext<ConversionContextStateInterface | null>(null);
+
+export const useConversionData = (): ConversionContextStateInterface => {
   const contextState = useContext(Context);
   if (contextState === null) {
     throw new Error('useConversionData must be used within a ConverterForm tag');
@@ -37,26 +40,30 @@ const ConverterForm: FunctionComponent<{ children: React.ReactNode }> = (props: 
         from: CurrenciesEnum.EUR,
         to: CurrenciesEnum.USD,
         amount: 1
-    }
+    } as ConvertCurrencyInterface;
     const { register, handleSubmit, errors } = useForm({
         resolver: zodResolver(schema),
     });
     const [inputAmount, setAmount] = useState('');
-    const [state, setState] = useState<ConversionContextState>({ 
+    const [state, setState] = useState<ConversionContextStateInterface>({ 
         status: 'LOADED',
-        value: initialValue
+        value: initialValue,
+        history: []
     });
     const convertCurrency = async ({ from, to, amount }: ConvertCurrencyInterface) => {
         try {
             const fixedAmount = amount.toFixed(2);
             setAmount(fixedAmount);
+            
             const response: { data: ConvertCurrencyInterface } = await ApiRequests.convertCurrency({ from, to, amount: fixedAmount });
+
             setState({
                 status: 'LOADED',
-                value: response.data
+                value: response.data,
+                history: [...state.history.slice(1 - LimitsEnum.MAX_HISTORY_ELEMENTS), response.data]
             });
         } catch (error) {
-            setState({ status: 'ERROR', message: 'Unable to load data' });
+            setState({ ...state, status: 'ERROR' });
         }
     }
     useEffect(() => {
