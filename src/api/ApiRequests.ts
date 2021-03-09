@@ -1,6 +1,8 @@
-import axios from 'axios';
-import qs from 'qs';
+import axios, { AxiosPromise } from 'axios';
 import { ConvertCurrencyInterface } from '../shared/interfaces';
 
-export const convertCurrency = (data: { to: string, from: string,amount: string}): Promise<ConvertCurrencyInterface> =>
-                axios.post('http://localhost:9000/converter', { data: qs.stringify(data), headers: {'Content-Type': 'application/json' }});
+export const convertCurrency = (body: { to: string, from: string,amount: string}): Promise<{ data: ConvertCurrencyInterface }> =>
+                axios.post('http://localhost:9000/converter', body, {
+                    headers: { 'content-type': 'application/json' }
+                });
+ 

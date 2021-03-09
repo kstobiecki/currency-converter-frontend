@@ -50,10 +50,10 @@ const ConverterForm: FunctionComponent<{ children: React.ReactNode }> = (props: 
         try {
             const fixedAmount = amount.toFixed(2);
             setAmount(fixedAmount);
-            const response: ConvertCurrencyInterface = await ApiRequests.convertCurrency({ from, to, amount: fixedAmount });
+            const response: { data: ConvertCurrencyInterface } = await ApiRequests.convertCurrency({ from, to, amount: fixedAmount });
             setState({
                 status: 'LOADED',
-                value: response
+                value: response.data
             });
         } catch (error) {
             setState({ status: 'ERROR', message: 'Unable to load data' });
