@@ -1,10 +1,13 @@
 .container {
     width: 68%;
     p {
+        max-width: 98%;
         color: rgb(92, 102, 123);
         font-weight: bold;
         font-size: 15px;
         margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
         &:nth-child(2n) {
             font-size: 16px;
