@@ -35,7 +35,9 @@ const schema: z.ZodObject<ZodRawShape> = z.object({
       path: ['to']
     })
 
-const ConverterForm: FunctionComponent<{ children: React.ReactNode }> = (props: { children: React.ReactNode }) => {
+const ConverterForm: FunctionComponent<{ children: React.ReactNode }> = (props: { 
+        children: React.ReactNode 
+    }) => {
     const initialValue = {
         from: CurrenciesEnum.EUR,
         to: CurrenciesEnum.USD,

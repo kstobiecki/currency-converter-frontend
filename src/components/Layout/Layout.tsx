@@ -1,12 +1,12 @@
-import { FunctionComponent } from 'react';
+import React, { FunctionComponent } from 'react';
 import styles from './Layout.module.scss'
 import PropTypes from 'prop-types';
 
-const Layout: FunctionComponent<{}> = ({
-    children
+const Layout: FunctionComponent<{ children: React.ReactNode }> = (props: {
+    children: React.ReactNode
   })=> (
   <div className={styles.container}>
-    {children}
+    {props.children}
   </div>
 );
 
