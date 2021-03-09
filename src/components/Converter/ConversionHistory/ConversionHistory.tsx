@@ -12,7 +12,7 @@ const ConversionHistory: FunctionComponent<{}>  = () => {
                 conversionData.history.map((conversionItem: ConvertCurrencyInterface, index: number) => 
                     <div key={index}>
                         <p>{new Date(conversionItem.date).toLocaleString()}</p>
-                        <p>{conversionItem.amount} {conversionItem.from} = {conversionItem.converted?.toFixed(5)} {conversionItem.to}</p>
+                        <p>{conversionItem.amount} {conversionItem.from} = {conversionItem.converted?.toFixed(4)} {conversionItem.to}</p>
                     </div>
                 )
             }
