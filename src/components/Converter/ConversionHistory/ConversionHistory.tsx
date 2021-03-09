@@ -3,7 +3,7 @@ import styles from './ConversionHistory.module.scss'
 
 const ConversionHistory: FunctionComponent<{}>  = () => {
     return (
-        <div></div>
+        <div className={styles.container}></div>
     );
 }
 

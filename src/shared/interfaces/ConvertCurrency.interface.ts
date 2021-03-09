@@ -5,5 +5,6 @@ export interface ConvertCurrencyInterface {
     to: CurrenciesEnum;
     amount: number;
     converted?: number;
-    date?: Date 
+    date?: Date;
+    conversion?: number;
 }

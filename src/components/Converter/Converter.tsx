@@ -8,8 +8,10 @@ const Converter: FunctionComponent<{}>  = () => {
     return (
         <div className={styles.container}>
             <ConverterForm>
-                <ConversionDisplay/>
-                <ConversionHistory/>
+                <div className={styles.displayContainer}>
+                    <ConversionDisplay/>
+                    <ConversionHistory/>
+                </div>
             </ConverterForm>
         </div>
     );

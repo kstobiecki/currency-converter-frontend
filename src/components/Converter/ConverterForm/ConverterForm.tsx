@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, createContext, useContext } from 'react';
+import React, { FunctionComponent, useState, createContext, useContext, useEffect } from 'react';
 import styles from './ConverterForm.module.scss'
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,18 +9,14 @@ import * as ApiRequests from '../../../api/ApiRequests';
 import { ConvertCurrencyInterface } from '../../../shared/interfaces';
 import { CurrenciesEnum } from '../../../shared/enums'
 import { ZodRawShape } from 'zod/lib/src/types/base';
+import { ConversionContextState } from '../../../shared/types';
 
+const Context = createContext<ConversionContextState | null>(null);
 
-type ContextState = 
-{ status: 'ERROR'; message: string }
-| { status: 'LOADED'; value: ConvertCurrencyInterface };
-
-const Context = createContext<ContextState | null>(null);
-
-export const useItemData = (): ContextState => {
+export const useConversionData = (): ConversionContextState => {
   const contextState = useContext(Context);
   if (contextState === null) {
-    throw new Error('useItemData must be used within a ConverterForm tag');
+    throw new Error('useConversionData must be used within a ConverterForm tag');
   }
   return contextState;
 };
@@ -37,59 +33,66 @@ const schema: z.ZodObject<ZodRawShape> = z.object({
     })
 
 const ConverterForm: FunctionComponent<{ children: React.ReactNode }> = (props: { children: React.ReactNode }) => {
+    const initialValue = {
+        from: CurrenciesEnum.EUR,
+        to: CurrenciesEnum.USD,
+        amount: 1
+    }
     const { register, handleSubmit, errors } = useForm({
         resolver: zodResolver(schema),
     });
-    const [state, setState] = useState<ContextState>({ 
+    const [inputAmount, setAmount] = useState('');
+    const [state, setState] = useState<ConversionContextState>({ 
         status: 'LOADED',
-        value: {
-            from: CurrenciesEnum.EUR,
-            to: CurrenciesEnum.USD,
-            amount: 0,
-            date: new Date(),
-            converted: 0
-        }
+        value: initialValue
     });
-    const onSubmit = async ({ from, to, amount }: ConvertCurrencyInterface) => {
+    const convertCurrency = async ({ from, to, amount }: ConvertCurrencyInterface) => {
         try {
-            const response = await ApiRequests.convertCurrency({ from, to, amount });
+            const fixedAmount = amount.toFixed(2);
+            setAmount(fixedAmount);
+            const response: ConvertCurrencyInterface = await ApiRequests.convertCurrency({ from, to, amount: fixedAmount });
             setState({
                 status: 'LOADED',
                 value: response
-              });
+            });
         } catch (error) {
-            setState({ status: 'ERROR', message: error });
+            setState({ status: 'ERROR', message: 'Unable to load data' });
         }
     }
+    useEffect(() => {
+        convertCurrency(initialValue)
+    }, []);
 
     return (
         <Context.Provider value={state}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <div className={styles.inputContainer}>
-                    <label>Amount</label>
-                    <input name="amount" ref={register({ valueAsNumber: true })} defaultValue='0'/>
-                    {errors.amount && <p>Please enter a valid amount</p>}
-                </div>
-                <div className={styles.selectContainer}>
-                    <label>From</label>
-                    <select name="from" ref={register} defaultValue={CurrenciesEnum.EUR}>
-                        <option value={CurrenciesEnum.USD}>US Dollar</option>
-                        <option value={CurrenciesEnum.EUR}>Euro</option>
-                        <option value={CurrenciesEnum.JPY}>JPY</option>
-                    </select>
-                </div>
-                <div className={styles.selectContainer}>
-                    <label>To</label>
-                    <select name="to" ref={register}>
-                        <option value={CurrenciesEnum.USD}>US Dollar</option>
-                        <option value={CurrenciesEnum.EUR}>Euro</option>
-                        <option value={CurrenciesEnum.JPY}>JPY</option>
-                    </select>
-                    {errors?.to && <p>{errors.to?.message}</p>}
-                </div>
-                <button className={styles.submitBtn}><FontAwesomeIcon icon={faChevronRight} /></button>
-            </form>
-            {props.children}
+            <div className={styles.container}>
+                <form onSubmit={handleSubmit(convertCurrency)}>
+                    <div className={styles.inputContainer}>
+                        <label>Amount</label>
+                        <input name="amount" ref={register({ valueAsNumber: true })} value={inputAmount} onChange={e => setAmount(e.target.value)}/>
+                        {errors.amount && <p>Please enter a valid amount</p>}
+                    </div>
+                    <div className={styles.selectContainer}>
+                        <label>From</label>
+                        <select name="from" ref={register} defaultValue={CurrenciesEnum.EUR}>
+                            <option value={CurrenciesEnum.USD}>US Dollar</option>
+                            <option value={CurrenciesEnum.EUR}>Euro</option>
+                            <option value={CurrenciesEnum.JPY}>JPY</option>
+                        </select>
+                    </div>
+                    <div className={styles.selectContainer}>
+                        <label>To</label>
+                        <select name="to" ref={register}>
+                            <option value={CurrenciesEnum.USD}>US Dollar</option>
+                            <option value={CurrenciesEnum.EUR}>Euro</option>
+                            <option value={CurrenciesEnum.JPY}>JPY</option>
+                        </select>
+                        {errors?.to && <p>{errors.to?.message}</p>}
+                    </div>
+                    <button className={styles.submitBtn}><FontAwesomeIcon icon={faChevronRight} /></button>
+                </form>
+                {props.children}
+            </div>
         </Context.Provider>
     );
 }

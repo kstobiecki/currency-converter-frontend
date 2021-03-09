@@ -1,0 +1,16 @@
+.container {
+    width: 100%;
+}
+
+p {
+    color: rgb(92, 102, 123);
+    font-weight: bold;
+    font-size: 15px;
+    margin: 0;
+
+    &:nth-child(2) {
+        color: rgb(46, 60, 87);
+        font-size: 24px;
+        margin: 10px 0px 35px;
+    }
+}
