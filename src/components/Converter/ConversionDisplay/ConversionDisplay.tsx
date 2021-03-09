@@ -5,13 +5,10 @@ import styles from './ConversionDisplay.module.scss'
 const ConversionDisplay: FunctionComponent<{}>  = () => {
     const data = useItemData();
 
-    if (data.status === 'LOADING') {
-      return <div>data is loading</div>;
-    } else if (data.status === 'ERROR') {
-      return <div>Unable to load item data</div>;
+    if (data.status === 'ERROR') {
+      return <div>Unable to load item data: {data.message}</div>;
     }
-
-    return <div>Hello {data.value.count}</div>;
+    return <div>Hello {data.value.amount}</div>;
 }
 
 export default ConversionDisplay;
